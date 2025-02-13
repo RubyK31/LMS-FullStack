@@ -1,11 +1,14 @@
 import uniqid from "uniqid";
 import Quill from "quill";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { assets } from "../../assets/assets";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
+import axios from "axios";
 const AddCourse = () => {
   const quillRef = useRef(null);
   const editorRef = useRef(null);
-
+  const { getToken, backendUrl } = useContext(AppContext)
   const [courseTitle, setCourseTitle] = useState("");
   const [coursePrice, setCoursePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -93,7 +96,36 @@ const AddCourse = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
+      if (!image) {
+        toast.error('Thumbnail not selected')
+      }
+      const courseData = {
+        courseTitle,
+        courseDescription: quillRef.current.root.innerHTML,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters
+      }
+      const formData = new FormData()
+      formData.append('courseData', JSON.stringify(courseData))
+      formData.append('image', image)
+
+      const token = await getToken()
+      const { data } = await axios.post(backendUrl + '/api/educator/add-course', formData, { headers: { Authorization: `Bearer ${token}` } })
+      if (data.success) {
+        toast.success(data.message)
+        setCourseTitle('')
+        setCoursePrice(0)
+        setDiscount(0)
+        setImage(null)
+        setChapters([])
+        quillRef.current.root.innerHTML = ""
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   };
 
   useEffect(() => {
@@ -136,7 +168,7 @@ const AddCourse = () => {
           </div>
           <div className="flex md:flex-row flex-col items-center gap-3">
             <p>Course Thumbnail</p>
-            <label htmlFor="thumnail" className="flex items-center gap-3">
+            <label htmlFor="thumbnail" className="flex items-center gap-3">
               <img
                 src={assets.file_upload_icon}
                 alt=""
@@ -212,7 +244,8 @@ const AddCourse = () => {
                     >
                       <span>
                         {lectureIndex + 1}&nbsp;
-                        {lecture.lectureTitle} - {lecture.lectureDuration} mins -{" "}
+                        {lecture.lectureTitle} - {lecture.lectureDuration} mins
+                        -{" "}
                         <a
                           href={lecture.lectureUrl}
                           target="_blank"
