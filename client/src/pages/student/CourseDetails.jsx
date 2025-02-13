@@ -15,9 +15,7 @@ const CourseDetails = () => {
   const [openSections, setOpenSections] = useState({});
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
   const [playerData, setPlayerData] = useState(null);
-  console.log(setIsAlreadyEnrolled);
   const {
-    allCourses,
     calculateRating,
     calculateNoOfLectures,
     calculateCourseDuration,
@@ -25,9 +23,8 @@ const CourseDetails = () => {
     currency,
     backendUrl,
     userData,
-    getToken
+    getToken,
   } = useContext(AppContext);
-console.log(allCourses)
   const fetchAllCourses = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/course/" + id);
@@ -49,13 +46,17 @@ console.log(allCourses)
       if (isAlreadyEnrolled) {
         return toast.warn("Already Enrolled");
       }
-      const token = await getToken()
-      const { data } = await axios.post(backendUrl + '/api/user/purchase', { courseId: courseData._id }, { headers: { Authorization: `Bearer ${token}` } })
+      const token = await getToken();
+      const { data } = await axios.post(
+        backendUrl + "/api/user/purchase",
+        { courseId: courseData._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (data.success) {
-        const { session_url } = data
-        window.location.replace(session_url)
+        const { session_url } = data;
+        window.location.replace(session_url);
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
@@ -67,7 +68,7 @@ console.log(allCourses)
 
   useEffect(() => {
     if (userData && courseData) {
-      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
     }
   }, [userData, courseData]);
 
@@ -263,7 +264,10 @@ console.log(allCourses)
                 <p>{calculateNoOfLectures(courseData)} lessons</p>
               </div>
             </div>
-            <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
+            <button
+              onClick={enrollCourse}
+              className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium"
+            >
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>
             <div className="pt-6">

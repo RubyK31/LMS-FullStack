@@ -128,22 +128,27 @@ export const addUserRating = async (req, res) => {
   try {
     const course = await Course.findById(courseId);
     if (!course) {
-      return res.json({success: false, message: 'Course not found'})
+      return res.json({ success: false, message: "Course not found" });
     }
-    const user = await User.findById(userId)
-    if (!user || user.enrolledCourses.includes(courseId)) {
-      return res.json({success:false, message: 'User has not purchased this course'})
+    const user = await User.findById(userId);
+
+    if (!user || !user.enrolledCourses.includes(courseId)) {
+      return res.json({
+        success: false,
+        message: "User has not purchased this course",
+      });
     }
-    const existingRatingIndex = course.courseRatings.findByIndex(r => r.userId === userId)
+    const existingRatingIndex = course.courseRatings.findIndex(
+      (r) => r.userId === userId.toString()
+    );
     if (existingRatingIndex > -1) {
       course.courseRatings[existingRatingIndex].rating = rating;
     } else {
-      course.courseRatings.push({userId, rating})
+      course.courseRatings.push({ userId, rating });
     }
     await course.save();
-    return res.json({ success:true, message: 'Rating added' });
+    return res.json({ success: true, message: "Rating added" });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
-  
 };

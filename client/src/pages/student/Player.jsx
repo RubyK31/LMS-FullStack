@@ -27,8 +27,6 @@ const Player = () => {
   const [progressData, setProgressData] = useState(null);
   const [initialRating, setInitialRating] = useState(0);
 
-  console.log(playerData);
-
   const getCourseData = () => {
     enrolledCourses.map((course) => {
       if (course._id === courseId) {
@@ -72,12 +70,16 @@ const Player = () => {
   const handleRate = async (rating) => {
     try {
       const token = await getToken();
-      const { data } = await axios.post(backendUrl + "/api/user/add-rating", { courseId, rating }, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.post(
+        backendUrl + "/api/user/add-rating",
+        { courseId, rating },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (data.sucess) {
-        toast.success(data.message)
-        fetchUserEnrolledCourses()
+        toast.success(data.message);
+        fetchUserEnrolledCourses();
       } else {
-        toast.error(data.message)
+        toast.success(data.message);
       }
     } catch (error) {
       toast.error(error.message);
@@ -103,9 +105,9 @@ const Player = () => {
   };
 
   useEffect(() => {
-    getCourseProgress()
-  },[])
-  return courseData ?  (
+    getCourseProgress();
+  }, []);
+  return courseData ? (
     <>
       <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36">
         {/* left col */}
@@ -151,7 +153,12 @@ const Player = () => {
                           <img
                             className="w-4 h-4 mt-1"
                             src={
-                              progressData && progressData.lectureCompleted.includes(lecture.lectureId) ? assets.blue_tick_icon : assets.play_icon
+                              progressData &&
+                              progressData.lectureCompleted.includes(
+                                lecture.lectureId
+                              )
+                                ? assets.blue_tick_icon
+                                : assets.play_icon
                             }
                             alt=""
                           />
@@ -205,8 +212,14 @@ const Player = () => {
                   {playerData.chapter}.{playerData.lecture}{" "}
                   {playerData.lectureTitle}
                 </p>
-                <button onClick={()=> markLectureAsCompleted(playerData.lectureId)} className="text-blue-600">
-                  {progressData && progressData.lectureCompleted.includes(playerData.lectureId) ? "Completed" : "Mark Complete"}
+                <button
+                  onClick={() => markLectureAsCompleted(playerData.lectureId)}
+                  className="text-blue-600"
+                >
+                  {progressData &&
+                  progressData.lectureCompleted.includes(playerData.lectureId)
+                    ? "Completed"
+                    : "Mark Complete"}
                 </button>
               </div>
             </div>
@@ -217,7 +230,9 @@ const Player = () => {
       </div>
       <Footer />
     </>
-  ): <Loading />
+  ) : (
+    <Loading />
+  );
 };
 
 export default Player;

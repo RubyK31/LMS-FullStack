@@ -344,7 +344,7 @@ const AddCourse = () => {
                     onChange={(e) =>
                       setlectureDetails({
                         ...lectureDetails,
-                        isPreviewFree: e.target.value,
+                        isPreviewFree: e.target.checked,
                       })
                     }
                   />

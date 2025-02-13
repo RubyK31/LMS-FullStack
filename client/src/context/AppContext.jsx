@@ -18,7 +18,7 @@ export const AppContextProvider = (props) => {
   const { user } = useUser();
 
   const [allCourses, setAllCourses] = useState([]);
-  const [isEducator, setIsEducator] = useState(true);
+  const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userData, setUserData] = useState(null);
 
@@ -28,12 +28,10 @@ export const AppContextProvider = (props) => {
       if (data.success) {
         setAllCourses(data.courses);
       } else {
-        console.log(data.message)
-        //toast.error(data.message);
+        toast.error(data.message);
       }
     } catch (error) {
-      console.log(error)
-      //toast.error(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -52,8 +50,7 @@ export const AppContextProvider = (props) => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error)
-      //toast.error(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -65,18 +62,16 @@ export const AppContextProvider = (props) => {
     course.courseRatings.forEach((rating) => {
       totalRating += rating.rating;
     });
-    return (totalRating / course.courseRatings.length);
+    return totalRating / course.courseRatings.length;
   };
 
   const calculateChapterTime = (chapter) => {
-    console.log('ch', chapter)
     let time = 0;
     chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration));
     return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
   };
 
   const calculateCourseDuration = (course) => {
-    console.log('course', course)
     let time = 0;
     course.courseContent.map((chapter) =>
       chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration))
@@ -109,18 +104,18 @@ export const AppContextProvider = (props) => {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error)
-      //toast.error(error.message);
+      console.log(error);
+      toast.error(error.message);
     }
   };
 
   useEffect(() => {
     fetchAllCourses();
-    fetchUserEnrolledCourses();
-  });
+  }, []);
 
   useEffect(() => {
     if (user) {
+      fetchUserEnrolledCourses();
       fetchUserData();
     }
   }, [user]);

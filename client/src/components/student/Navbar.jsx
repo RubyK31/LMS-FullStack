@@ -9,7 +9,6 @@ const Navbar = () => {
   const { navigate, isEducator, backendUrl, setIsEducator, getToken } =
     useContext(AppContext);
   const isCourseListPage = location.pathname.includes("./course-list");
-  console.log(isCourseListPage, "iscourse");
   const { openSignIn } = useClerk();
   const { user } = useUser();
   const becomeEducator = async () => {
@@ -77,7 +76,7 @@ const Navbar = () => {
               <button onClick={becomeEducator}>
                 {isEducator ? "Educator Dashboard" : "Become Educator"}
               </button>
-              |<Link to="./my-enrollements">My Enrollments</Link>
+              |<Link to="./my-enrollments">My Enrollments</Link>
             </>
           )}
           {user ? (
